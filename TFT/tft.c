@@ -3662,11 +3662,11 @@ size_t write(uint8_t c)
                         (uint8_t)pgm_read_byte(&gfxFont->yAdvance);
         } else if(c != '\r') {
             uint8_t first = pgm_read_byte(&gfxFont->first);
-            if((c >= first) && (c <= (uint8_t)pgm_read_byte(&gfxFont->last))) {
-                GFXglyph *glyph = &(((GFXglyph *)pgm_read_pointer(
-                  &gfxFont->glyph))[c - first]);
-                uint8_t   w     = pgm_read_byte(&glyph->width),
-                          h     = pgm_read_byte(&glyph->height);
+            if((c >= first) && (c <= (uint8_t)pgm_read_byte(&gfxFont->last)))
+            {
+                GFXglyph *glyph = &(((GFXglyph *)pgm_read_pointer(&gfxFont->glyph))[c - first]);
+                uint8_t   w     = pgm_read_byte((uint8_t*)&glyph->width);
+                uint8_t   h     = pgm_read_byte((uint8_t*)&glyph->height);
                 if((w > 0) && (h > 0)) { // Is there an associated bitmap?
                     int16_t xo = (int8_t)pgm_read_byte(&glyph->xOffset); // sic
                     if(wrap && ((cursor_x + textsize * (xo + w)) > _width)) {

@@ -140,14 +140,14 @@ void delay (uint32_t time)
 
 
 /************************** For 216 MHZ ****************************/
-//#define WRITE_DELAY { WR_ACTIVE8; WR_ACTIVE8; } //216MHz
-//#define IDLE_DELAY  { WR_IDLE4;WR_IDLE4; }
-//#define READ_DELAY  { RD_ACTIVE16;RD_ACTIVE16;RD_ACTIVE16;}
+#define WRITE_DELAY { WR_ACTIVE8; WR_ACTIVE8; } //216MHz
+#define IDLE_DELAY  { WR_IDLE4;WR_IDLE4; }
+#define READ_DELAY  { RD_ACTIVE16;RD_ACTIVE16;RD_ACTIVE16;}
 
 
 /************************** For 48 MHZ ****************************/
-#define WRITE_DELAY { }
-#define READ_DELAY  { }
+//#define WRITE_DELAY { }
+//#define READ_DELAY  { }
 
 
 /*****************************  DEFINES FOR DIFFERENT TFTs   ****************************************************/
@@ -173,7 +173,7 @@ void delay (uint32_t time)
 //#define SUPPORT_9326_5420         //ILI9326, SPFD5420 +246 bytes
 //#define SUPPORT_9342              //costs +114 bytes
 //#define SUPPORT_9806              //UNTESTED
-#define SUPPORT_9488_555          //costs +230 bytes, 0.03s / 0.19s
+#define SUPPORT_9488_555            //costs +230 bytes, 0.03s / 0.19s
 //#define SUPPORT_B509_7793         //R61509, ST7793 +244 bytes
 //#define OFFSET_9327 32            //costs about 103 bytes, 0.08s
 
