@@ -28,9 +28,10 @@
 /* USER CODE BEGIN Includes */
 
 #include <math.h>
-#include "tft.h"
-#include "functions.h"
 #include <stdio.h>
+
+#include "snake_function.h"
+
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -58,9 +59,6 @@ uint16_t gRandSeed;
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
 
-void InitRandomizer(void);
-uint16_t GetRandomizer(void);
-
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -76,6 +74,10 @@ int main(void)
 {
   /* USER CODE BEGIN 1 */
 
+  snake_t snake = { 0 };
+  food_t food = { 0 };
+  uint32_t gPrgCycle = 0;
+  uint32_t gMainEvent = 0;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -102,46 +104,33 @@ int main(void)
   MX_USART3_UART_Init();
   /* USER CODE BEGIN 2 */
 
-  InitRandomizer();
-  tft_init(readID());
-  fillScreen(BLACK);
+  platform_init();
 
-  uint16_t prevRect[2] = {0};
-  uint16_t prevCirc[2] = {0};
-  uint16_t colors[6] = {0x001F, 0xF800, 0x07E0, 0x07FF, 0xF81F, 0xFFE0};
-  uint8_t color_idx = 0;
   while(1)
   {
 
-	  for (int iter = 0; iter < 4; iter++)
+	  fillScreen(BLACK);
+	  snake_init(&snake);
+	  snake_display(&snake);
+
+	  while(1)
 	  {
-		  for(int y = 0; y < 480; y+= 20)
-		  {
-			  for(int x = 0; x < 320; x+= 20)
-			  {
-				  //drawRect(prevRect[0], prevRect[1], 20, 20, BLACK);
-				  //drawRect(x, y, 20, 20, WHITE);
-				  //HAL_Delay(200);
-				  HAL_Delay(50);
-				  prevRect[0] = x;
-				  prevRect[1] = y;
+		platform_get_control(&snake);
+		snake_move(&snake);
 
-				  //if(!x%32)
-				  {
-					  //fillCircle(prevCirc[0], prevCirc[1], 5, BLACK);
-					  prevCirc[0] = GetRandomizer()%300 + 10;
-					  prevCirc[1] = GetRandomizer()%460 + 10;
-					  fillCircle(prevCirc[0], prevCirc[1], 5, colors[color_idx]);
-				  }
+		if (snake.state != PLAYING)
+		{
+			//snake_inform(&snake);
+			platform_sleep(3000);
+			while(!HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin));
+			break;
+		};
 
-			  }
-		  }
+		snake_haseaten(&snake, &food);
+		snake_display(&snake);
+		snake_place_food(&snake, &food, gPrgCycle);
+		platform_sleep(500);
 	  }
-	  color_idx = (color_idx + 1) % 6;
-
-
-
-
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -150,6 +139,7 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+
   }
   /* USER CODE END 3 */
 }
@@ -180,7 +170,7 @@ void SystemClock_Config(void)
   RCC_OscInitStruct.PLL.PLLM = 4;
   RCC_OscInitStruct.PLL.PLLN = 216;
   RCC_OscInitStruct.PLL.PLLP = RCC_PLLP_DIV2;
-  RCC_OscInitStruct.PLL.PLLQ = 4;
+  RCC_OscInitStruct.PLL.PLLQ = 9;
   RCC_OscInitStruct.PLL.PLLR = 2;
   if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
   {
@@ -208,36 +198,9 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-int _write(int file, char *ptr, int len) {
-  HAL_UART_Transmit(&huart3, (uint8_t*) ptr, len, HAL_MAX_DELAY);
-  return len;
-}
 
-
-void InitRandomizer(void)
-{
-
-	  HAL_ADC_Start(&hadc1);
-	  HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
-	  gRandSeed = HAL_ADC_GetValue(&hadc1);
-	  HAL_ADC_Stop(&hadc1);
-	  while(gRandSeed < 0x8000) gRandSeed += gRandSeed;
-}
 /* USER CODE END 4 */
 
-uint16_t GetRandomizer(void)
-{
-	  uint16_t lsb;
-
-	  lsb = gRandSeed & 1;
-	  gRandSeed >>= 1;
-	  if (lsb == 1)
-	  {
-		  gRandSeed ^= 0xB400u;
-	  }
-
-	  return gRandSeed;
-}
 /**
   * @brief  This function is executed in case of error occurrence.
   * @retval None
