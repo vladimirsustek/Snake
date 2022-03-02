@@ -50,6 +50,17 @@
 
 /********************************************** NO CHNAGES AFTER THIS ************************************************/
 
+void delay (uint32_t time)
+{
+	for(uint32_t a = 0; a < time; a++)
+	{
+		for(uint32_t b = 0; b < 108; b++)
+		{
+			__NOP();
+		}
+	}
+
+}
 
 void PIN_LOW (GPIO_TypeDef* GPIOx, uint16_t GPIO_Pin)
 {

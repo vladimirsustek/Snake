@@ -14,12 +14,10 @@
 /* LCD dependecies */
 #include "tft.h"
 #include "functions.h"
-
 /* Randomizer dependencies */
 #include "adc.h"
 #include "stm32f7xx_hal.h"
-
-#include "uart_com.h"
+#include "usart.h"
 
 #define ARENA_OFFSET_X		(uint16_t)(6)
 #define ARENA_OFFSET_Y		(uint16_t)(9)
@@ -35,7 +33,7 @@
 #define FOOD_MAX_Y			(uint16_t)(20)
 #define FOOD_MIN_Y			(uint16_t)(1)
 
-#define SNAKE_MAX_LNG		(uint16_t)(50)
+#define SNAKE_MAX_LNG		(uint16_t)(100)
 #define SNAKE_INIT_LNG		(uint16_t)(3)
 #define SNAKE_WON_LIMIT		(uint16_t)(SNAKE_MAX_LNG - 1)
 
@@ -51,7 +49,7 @@
 #define GENERAL_ERROR		(uint16_t)(-1)
 #define INVALID_COORDS		(uint16_t)(-1)
 
-typedef enum { UP = 'w', DOWN = 's', LEFT =  'a', RIGHT = 'd', PAUSE = 'p', QUIT = 'q' } snake_dir_e;
+typedef enum { UP = 'W', DOWN = 'S', LEFT =  'A', RIGHT = 'D', PAUSE = 'P', QUIT = 'Q' } snake_dir_e;
 
 typedef enum { WAITING, PLACED, EATEN } foodstate_e;
 
@@ -91,5 +89,6 @@ void platform_sleep(uint16_t ms);
 void platform_showInformal(char* str, uint16_t length);
 void platform_fatal(void);
 void platform_get_control(snake_t* snake);
+void platform_refresh_hw(void);
 
 #endif /* SNAKE_PORT_H_ */

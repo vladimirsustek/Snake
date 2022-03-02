@@ -20,12 +20,12 @@ typedef struct {
 } GFXfont;
 
 extern GFXfont *gfxFont;
-extern /*const*/ GFXfont mono9x7;
-extern /*const*/ GFXfont mono9x7bold;
-extern /*const*/ GFXfont mono12x7;
-extern /*const*/ GFXfont mono12x7bold;
-extern /*const*/ GFXfont mono18x7;
-extern /*const*/ GFXfont mono18x7bold;
+extern const GFXfont mono9x7;
+extern const GFXfont mono9x7bold;
+extern const GFXfont mono12x7;
+extern const GFXfont mono12x7bold;
+extern const GFXfont mono18x7;
+extern const GFXfont mono18x7bold;
 
 
 

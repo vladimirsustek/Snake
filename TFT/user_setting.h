@@ -56,15 +56,9 @@
 
 /****************** delay in microseconds ***********************/
 extern TIM_HandleTypeDef htim4;
-void delay (uint32_t time)
-{
-	/* change your code here for the delay in microseconds */
-	__HAL_TIM_SET_COUNTER(&htim4, 0);
-	while ((__HAL_TIM_GET_COUNTER(&htim4)) < time);
-}
 
 
-
+void delay (uint32_t time);
 
 // configure macros for the data pins.
 

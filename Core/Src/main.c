@@ -19,19 +19,14 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "adc.h"
-#include "dma.h"
-#include "tim.h"
 #include "usart.h"
 #include "gpio.h"
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
-#include <math.h>
-#include <stdio.h>
-
+#include "tft.h"
 #include "snake_function.h"
-
+#include "snake_port.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -51,8 +46,6 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-ADC_HandleTypeDef hadc1;
-uint16_t gRandSeed;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -63,7 +56,6 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
 /* USER CODE END 0 */
 
 /**
@@ -73,11 +65,6 @@ void SystemClock_Config(void);
 int main(void)
 {
   /* USER CODE BEGIN 1 */
-
-  snake_t snake = { 0 };
-  food_t food = { 0 };
-  uint32_t gPrgCycle = 0;
-  uint32_t gMainEvent = 0;
   /* USER CODE END 1 */
 
   /* MCU Configuration--------------------------------------------------------*/
@@ -98,48 +85,38 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
-  MX_TIM4_Init();
-  MX_DMA_Init();
-  MX_ADC1_Init();
   MX_USART3_UART_Init();
+  MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
-
-  platform_init();
-
-  while(1)
-  {
-
-	  fillScreen(BLACK);
-	  snake_init(&snake);
-	  snake_display(&snake);
-
-	  while(1)
-	  {
-		platform_get_control(&snake);
-		snake_move(&snake);
-
-		if (snake.state != PLAYING)
-		{
-			//snake_inform(&snake);
-			platform_sleep(3000);
-			while(!HAL_GPIO_ReadPin(USER_Btn_GPIO_Port, USER_Btn_Pin));
-			break;
-		};
-
-		snake_haseaten(&snake, &food);
-		snake_display(&snake);
-		snake_place_food(&snake, &food, gPrgCycle);
-		platform_sleep(500);
-	  }
+  snake_hw_init();
   /* USER CODE END 2 */
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
-
+  while (1)
+  {
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	  snake_t snake = { 0 };
+	  food_t food = { 0 };
+	  uint32_t gPrgCycle = 0;
+	  snake_init(&snake);
 
+	  for(;;)
+	  {
+	    //uart3_check_dma();
+		snake_control(&snake);
+		snake_move(&snake);
+
+		if (snake.state != PLAYING) break;
+
+		snake_haseaten(&snake, &food);
+		snake_display(&snake);
+		snake_place_food(&snake, &food, gPrgCycle);
+
+		HAL_Delay(150);
+	  }
   }
   /* USER CODE END 3 */
 }
@@ -198,8 +175,28 @@ void SystemClock_Config(void)
 }
 
 /* USER CODE BEGIN 4 */
-
 /* USER CODE END 4 */
+
+/**
+  * @brief  Period elapsed callback in non blocking mode
+  * @note   This function is called  when TIM7 interrupt took place, inside
+  * HAL_TIM_IRQHandler(). It makes a direct call to HAL_IncTick() to increment
+  * a global variable "uwTick" used as application time base.
+  * @param  htim : TIM handle
+  * @retval None
+  */
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
+{
+  /* USER CODE BEGIN Callback 0 */
+
+  /* USER CODE END Callback 0 */
+  if (htim->Instance == TIM7) {
+    HAL_IncTick();
+  }
+  /* USER CODE BEGIN Callback 1 */
+
+  /* USER CODE END Callback 1 */
+}
 
 /**
   * @brief  This function is executed in case of error occurrence.

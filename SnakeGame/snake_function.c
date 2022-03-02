@@ -25,11 +25,22 @@
 
 static uint32_t gPrgCycle = 0;
 
+void snake_control(snake_t* snake)
+{
+	platform_get_control(snake);
+}
+
+
+void snake_hw_init(void)
+{
+	platform_init();
+}
 
 void snake_init(snake_t* snake)
 {
 	snake->length = SNAKE_INIT_LNG;
-	snake->direction = RIGHT;
+	snake->direction = PAUSE;
+	snake->state = PLAYING;
 	snake->ghost.x = INVALID_COORDS;
 	snake->ghost.y = INVALID_COORDS;
 
@@ -40,6 +51,8 @@ void snake_init(snake_t* snake)
 		snake->body[idx].x = SNAKE_INIT_X_CORD + idx;
 		snake->body[idx].y = SNAKE_INIT_Y_CORD;
 	}
+
+	platform_refresh_hw();
 
 }
 
@@ -58,24 +71,6 @@ void snake_display(snake_t* snake)
 
 void snake_diplay_borders(void)
 {
-	/*
-	for (int x = 0; x < ARENA_MAX_X; x++)
-	{
-		platform_printXY(x, ARENA_MIN_Y, '-');
-	}
-	for (int x = 0; x < ARENA_MAX_X; x++)
-	{
-		platform_printXY(x, ARENA_MAX_Y, '-');
-	}
-	for (int y = 0; y < ARENA_MAX_Y; y++)
-	{
-		platform_printXY(ARENA_MIN_X, y, '|');
-	}
-	for (int y = 0; y < ARENA_MAX_Y; y++)
-	{
-		platform_printXY(ARENA_MAX_X, y, '|');
-	}
-	*/
 }
 
 void snake_move(snake_t* snake)
@@ -235,11 +230,17 @@ void snake_place_food(snake_t* snake, food_t* food, uint32_t tick)
 }
 void snake_haseaten(snake_t* snake, food_t* food)
 {
+
+
 	if ((snake->body[snake->length - 1].x == food->coord.x)
 		&& (snake->body[snake->length - 1].y == food->coord.y))
 	{
+		/* Needed temporary copy for shifting the whole array right - for embedded*/
+		coord_t tempSnake[SNAKE_MAX_LNG] = {0};
+		memcpy(tempSnake, &(snake->body[0]), (size_t)snake->length*sizeof(coord_t));
+
 		/* Just append the ghost to the end, increment length and disable ghost*/
-		memcpy(&(snake->body[1]), &(snake->body[0]), snake->length*sizeof(coord_t));
+		memcpy(&(snake->body[1]), tempSnake, (size_t)snake->length*sizeof(coord_t));
 		snake->body[0] = snake->ghost;
 		snake->ghost.x = INVALID_COORDS;
 		snake->ghost.y = INVALID_COORDS;
@@ -251,23 +252,5 @@ void snake_haseaten(snake_t* snake, food_t* food)
 
 void snake_inform(snake_t* snake)
 {
-	switch (snake->state)
-	{
-	case PLAYING:
-	{
-		/* Keep playing*/
-		snake->state = snake->state;
-	}
-	break;
-	case CRASHED :
-	{
-		//platform_showInformal("Snake Crashed", (uint16_t)strlen("Snake Crashed"));
-	}
-	break;
-	case WON:
-	{
-		//platform_showInformal("Snake won", (uint16_t)strlen("Snake won"));
-	}
-	break;
-	}
+
 }
