@@ -9,14 +9,14 @@
 #define USER_SETTING_H_
 
 
-#define RD_PORT GPIOA
-#define RD_PIN  GPIO_PIN_3
+#define RD_PORT GPIOD
+#define RD_PIN  GPIO_PIN_7
 
 #define WR_PORT GPIOC
 #define WR_PIN  GPIO_PIN_0
 
-#define CD_PORT GPIOC          // RS PORT
-#define CD_PIN  GPIO_PIN_3     // RS PIN
+#define CD_PORT GPIOD          // RS PORT
+#define CD_PIN  GPIO_PIN_5     // RS PIN
 
 #define CS_PORT GPIOF
 #define CS_PIN  GPIO_PIN_3
